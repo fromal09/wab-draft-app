@@ -1,0 +1,116 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg:        #04060d;
+  --bg1:       #080d18;
+  --bg2:       #0c1220;
+  --bg3:       #111827;
+  --border:    #1a2438;
+  --border2:   #243049;
+  --text:      #e8edf5;
+  --text2:     #8899b4;
+  --text3:     #3d5270;
+  --gold:      #f5a623;
+  --gold2:     #fbbf24;
+  --silver:    #cbd5e1;
+  --green:     #34d399;
+  --red:       #f87171;
+  --blue:      #60a5fa;
+  --purple:    #a78bfa;
+  --cyan:      #22d3ee;
+  --accent:    #f5a623;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 14px; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Space Mono', 'Courier New', monospace;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, .heading {
+  font-family: 'Syne', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+
+.tab-active { position: relative; }
+.tab-active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0; right: 0;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 2px 2px 0 0;
+}
+
+/* Timer animations */
+@keyframes pulse-red {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.animate-pulse-red { animation: pulse-red 0.6s ease-in-out infinite; }
+
+@keyframes timer-shrink {
+  from { width: 100%; }
+  to   { width: 0%; }
+}
+
+/* Price badge shimmer for elite */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+.badge-gold {
+  background: linear-gradient(90deg, #b7791f 0%, #f5a623 40%, #fcd34d 60%, #b7791f 100%);
+  background-size: 200% auto;
+  animation: shimmer 3s linear infinite;
+  color: #1c1408;
+  font-weight: 800;
+}
+
+/* Glow effect on hover */
+.player-row:hover .price-badge { box-shadow: 0 0 12px rgba(245,166,35,0.3); }
+
+/* Draft sold animation */
+@keyframes sold-flash {
+  0%   { background: #16a34a; }
+  50%  { background: #15803d; }
+  100% { background: transparent; }
+}
+.sold-flash { animation: sold-flash 1s ease-out forwards; }
+
+/* Subtle scan line on the app */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.03) 2px,
+    rgba(0,0,0,0.03) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+input, select, button { font-family: inherit; }
+
+.font-syne { font-family: 'Syne', sans-serif; }
+.font-mono { font-family: 'Space Mono', monospace; }
