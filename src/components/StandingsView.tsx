@@ -8,8 +8,8 @@ interface Props {
   standings: TeamStanding[]
 }
 
-const HITTING_CATS: Category[] = ['R','HR','RBI','SB','AVG','OBP']
-const PITCHING_CATS: Category[] = ['W','SV','HLD','K','ERA','WHIP','BB','L']
+const HITTING_CATS: Category[] = ['R','2B','3B','HR','RBI','SBN','SO','AVG','OBP']
+const PITCHING_CATS: Category[] = ['W','SV','HLD','K','ERA','WHIP','BB','L','QA3']
 
 function fmtCat(cat: Category, val: number): string {
   if (!val && val !== 0) return '—'
@@ -30,7 +30,7 @@ function rankColor(rank: number, total: number): string {
 }
 
 export default function StandingsView({ managers, standings }: Props) {
-  const [sortCat, setSortCat] = useState<Category | 'total'>('total')
+  const [sortCat, setSortCat] = useState<Category | 'total' | 'surplus'>('total')
   const n = managers.length
 
   const ranksByCat: Record<Category, ReturnType<typeof rankByCategory>> = {} as any
@@ -43,7 +43,17 @@ export default function StandingsView({ managers, standings }: Props) {
     pts: totalRankPoints(standings, m.id),
   }))
 
+  const surplusByManager = managers.map(m => ({
+    managerId: m.id,
+    surplus: m.roster.reduce((sum, e) => sum + e.player.pr, 0) - m.spent,
+  }))
+
   const sorted = [...managers].sort((a, b) => {
+    if (sortCat === 'surplus') {
+      const sa = surplusByManager.find(x => x.managerId === a.id)?.surplus ?? 0
+      const sb = surplusByManager.find(x => x.managerId === b.id)?.surplus ?? 0
+      return sb - sa
+    }
     if (sortCat === 'total') {
       return (totalPts.find(x => x.managerId === a.id)?.pts ?? 999) -
              (totalPts.find(x => x.managerId === b.id)?.pts ?? 999)
@@ -77,6 +87,9 @@ export default function StandingsView({ managers, standings }: Props) {
               </th>
               <th onClick={() => setSortCat('total')} style={{ padding: '6px 8px', textAlign: 'center', cursor: 'pointer', color: sortCat === 'total' ? 'var(--gold)' : 'var(--text3)', fontWeight: sortCat === 'total' ? 700 : 400, whiteSpace: 'nowrap' }}>
                 TOTAL ▴
+              </th>
+              <th onClick={() => setSortCat('surplus')} style={{ padding: '6px 8px', textAlign: 'center', cursor: 'pointer', color: sortCat === 'surplus' ? 'var(--green)' : 'var(--text3)', fontWeight: sortCat === 'surplus' ? 700 : 400, whiteSpace: 'nowrap' }}>
+                SURPLUS
               </th>
               {/* Hitting divider */}
               <th style={{ padding: '6px 4px', textAlign: 'center', color: 'var(--cyan)', fontSize: 9, letterSpacing: '0.1em', borderLeft: '2px solid var(--border2)', fontWeight: 400 }}>
@@ -116,6 +129,13 @@ export default function StandingsView({ managers, standings }: Props) {
                   </td>
                   <td style={{ textAlign: 'center', padding: '7px 8px' }}>
                     <span style={{ fontWeight: 800, fontSize: 14, color: rankColor(idx + 1, n) }}>{pts}</span>
+                  </td>
+                  <td style={{ textAlign: 'center', padding: '7px 8px' }}>
+                    {(() => {
+                      const surplus = surplusByManager.find(x => x.managerId === mgr.id)?.surplus ?? 0
+                      const color = surplus > 0 ? 'var(--green)' : surplus < 0 ? 'var(--red)' : 'var(--text3)'
+                      return <span style={{ fontWeight: 700, fontSize: 13, color }}>{surplus > 0 ? '+' : ''}{Math.round(surplus)}</span>
+                    })()}
                   </td>
                   <td style={{ borderLeft: '2px solid var(--border2)' }} />
                   {HITTING_CATS.map(cat => {
