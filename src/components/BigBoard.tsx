@@ -442,9 +442,6 @@ export default function BigBoard({ draftedIds, hometownMap, managers, onNominate
           isDrafted={isDrafted(selectedPlayer)}
           onNominate={onNominate}
           onClose={() => setSelectedPlayer(null)}
-          adjustedPrices={adjustedPrices}
-          tag={tags[selectedPlayer.id + '|' + selectedPlayer.n] ?? null}
-          onCycleTag={onCycleTag}
         />
       )}
     </div>
