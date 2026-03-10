@@ -146,7 +146,7 @@ function RosterRow({ entry, onUndraft }: { entry: DraftEntry; onUndraft: (e: Dra
           )}
         </div>
         <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 1 }}>
-          {!isPitcher(p) ? `${(p as any).hr}HR ${(p as any).rb}RBI ${(p as any).r}R ${(p as any).sb}SB .${String((p as any).av.toFixed(3)).slice(1)}`
+          {!isPitcher(p) ? `${(p as any).r}R ${(p as any).d2}2B ${(p as any).hr}HR ${(p as any).rb}RBI ${(p as any).sbn}SBN .${String((p as any).av.toFixed(3)).slice(1)}`
             : `${(p as any).ip}IP ${(p as any).k}K ${(p as any).er.toFixed(2)}ERA`}
         </div>
       </div>

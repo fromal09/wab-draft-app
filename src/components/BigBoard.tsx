@@ -26,7 +26,7 @@ const POS_COLORS: Record<string, string> = {
   DH:'#ec4899', SP:'#a3e635', RP:'#fb923c',
 }
 
-type SortKey = 'pr'|'sc'|'hr'|'rb'|'r'|'sb'|'av'|'ob'|'ip'|'k'|'er'|'wh'|'w'|'sv'|'hld'|'age'|'adp_n'
+type SortKey = 'pr'|'sc'|'r'|'d2'|'d3'|'hr'|'rb'|'sbn'|'so'|'av'|'ob'|'ip'|'w'|'l'|'sv'|'hld'|'er'|'wh'|'bb'|'k'|'qa3'|'age'|'adp_n'
 
 interface Props {
   draftedIds: Set<string>
@@ -82,14 +82,17 @@ export default function BigBoard({ draftedIds, hometownMap, managers, onNominate
   const col = POS_COLORS[tab] ?? 'var(--text2)'
 
   const hitterSorts: {key: SortKey; label: string}[] = [
-    {key:'pr',label:'$'},{key:'sc',label:'SCR'},{key:'hr',label:'HR'},{key:'rb',label:'RBI'},
-    {key:'r',label:'R'},{key:'sb',label:'SB'},{key:'av',label:'AVG'},{key:'ob',label:'OBP'},
+    {key:'pr',label:'$'},{key:'sc',label:'SCR'},
+    {key:'r',label:'R'},{key:'d2',label:'2B'},{key:'d3',label:'3B'},{key:'hr',label:'HR'},
+    {key:'rb',label:'RBI'},{key:'sbn',label:'SBN'},{key:'so',label:'SO'},
+    {key:'av',label:'AVG'},{key:'ob',label:'OBP'},
     {key:'age',label:'AGE'},{key:'adp_n',label:'ADP'},
   ]
   const pitcherSorts: {key: SortKey; label: string}[] = [
-    {key:'pr',label:'$'},{key:'sc',label:'SCR'},{key:'ip',label:'IP'},{key:'k',label:'K'},
-    {key:'er',label:'ERA'},{key:'wh',label:'WHIP'},{key:'w',label:'W'},{key:'sv',label:'SV'},
-    {key:'hld',label:'HLD'},{key:'age',label:'AGE'},
+    {key:'pr',label:'$'},{key:'sc',label:'SCR'},
+    {key:'w',label:'W'},{key:'l',label:'L'},{key:'sv',label:'SV'},{key:'hld',label:'HLD'},
+    {key:'er',label:'ERA'},{key:'wh',label:'WHIP'},{key:'bb',label:'BB'},{key:'k',label:'K'},{key:'qa3',label:'QA3'},
+    {key:'age',label:'AGE'},
   ]
   const sorts = isPit ? pitcherSorts : hitterSorts
 
@@ -188,22 +191,27 @@ export default function BigBoard({ draftedIds, hometownMap, managers, onNominate
                 <div style={{ display: 'flex', gap: 8, marginTop: 2, fontSize: 10, flexWrap: 'wrap' }}>
                   {!isPitcher(p) ? (
                     <>
+                      <Stat label="R" v={p.r} />
+                      <Stat label="2B" v={p.d2} />
+                      <Stat label="3B" v={p.d3} />
                       <Stat label="HR" v={p.hr} />
                       <Stat label="RBI" v={p.rb} />
-                      <Stat label="R" v={p.r} />
-                      <Stat label="SB" v={p.sb} />
+                      <Stat label="SBN" v={p.sbn} />
+                      <Stat label="SO" v={p.so} />
                       <Stat label="AVG" v={p.av.toFixed(3)} />
                       <Stat label="OBP" v={p.ob.toFixed(3)} />
                     </>
                   ) : (
                     <>
-                      <Stat label="IP" v={p.ip} />
-                      <Stat label="K" v={p.k} />
+                      <Stat label="W" v={p.w} />
+                      <Stat label="L" v={p.l} />
+                      <Stat label="SV" v={p.sv} />
+                      <Stat label="HLD" v={p.hld} />
                       <Stat label="ERA" v={p.er.toFixed(2)} color={p.er < 3.2 ? 'var(--green)' : p.er < 4.0 ? 'var(--gold)' : 'var(--red)'} />
                       <Stat label="WHIP" v={p.wh.toFixed(2)} color={p.wh < 1.1 ? 'var(--green)' : p.wh < 1.3 ? 'var(--gold)' : 'var(--red)'} />
-                      <Stat label="W" v={p.w} />
-                      <Stat label="SV" v={p.sv} />
-                      {p.hld > 0 && <Stat label="HLD" v={p.hld} />}
+                      <Stat label="BB" v={p.bb} />
+                      <Stat label="K" v={p.k} />
+                      <Stat label="QA3" v={p.qa3} />
                     </>
                   )}
                 </div>
