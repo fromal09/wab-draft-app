@@ -8,9 +8,9 @@ interface Props {
   managers: Manager[]
   draftLog: DraftEntry[]
   onUndraft: (entry: DraftEntry) => void
-  onMoveSlot: (entry: DraftEntry, newSlot: string) => void
-  slotAssignments: Record<string, Record<string, string>>
-  onUpdateSlotAssignments: (managerId: string, assignments: Record<string, string>) => void
+  onMoveSlot?: (entry: DraftEntry, newSlot: string) => void
+  slotAssignments?: Record<string, Record<string, string>>
+  onUpdateSlotAssignments?: (managerId: string, assignments: Record<string, string>) => void
 }
 
 const DRAFT_TYPE_LABELS = { auction: 'Draft', keeper: 'Keeper', qualifying_offer: 'QO' }
@@ -102,11 +102,18 @@ function slotColor(slotId: string): string {
   return '#94a3b8'
 }
 
-export default function RosterView({ managers, draftLog, onUndraft, onMoveSlot, slotAssignments, onUpdateSlotAssignments }: Props) {
+export default function RosterView({ managers, draftLog, onUndraft, onMoveSlot, slotAssignments: externalAssignments, onUpdateSlotAssignments }: Props) {
   const [activeManager, setActiveManager] = useState(managers[0]?.id ?? '')
   const [showLog, setShowLog] = useState(false)
   const [dragOver, setDragOver] = useState<string | null>(null)
   const [dragging, setDragging] = useState<{entry: DraftEntry, fromSlot: string} | null>(null)
+  const [localAssignments, setLocalAssignments] = useState<Record<string, Record<string, string>>>({})
+
+  const slotAssignments = externalAssignments ?? localAssignments
+  const handleUpdateSlotAssignments = useCallback((managerId: string, assignments: Record<string, string>) => {
+    if (onUpdateSlotAssignments) onUpdateSlotAssignments(managerId, assignments)
+    else setLocalAssignments(prev => ({ ...prev, [managerId]: assignments }))
+  }, [onUpdateSlotAssignments])
 
   const manager = managers.find(m => m.id === activeManager)
   const remaining = manager ? manager.budget - manager.spent : 0
@@ -169,7 +176,7 @@ export default function RosterView({ managers, draftLog, onUndraft, onMoveSlot, 
       if (key === pkey) delete mgr[slotId]
     }
     mgr[toSlotId] = pkey
-    onUpdateSlotAssignments(activeManager, mgr)
+    handleUpdateSlotAssignments(activeManager, mgr)
     setDragging(null)
     setDragOver(null)
   }
