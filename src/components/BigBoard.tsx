@@ -47,13 +47,13 @@ interface Props {
   hometownMap: Record<string, string>
   managers: Manager[]
   onNominate: (p: Player) => void
-  adjustedPrices: Map<string, number>
-  draftLog: DraftEntry[]
-  tags: Record<string, PlayerTag>
-  onCycleTag: (key: string) => void
+  adjustedPrices?: Map<string, number>
+  draftLog?: DraftEntry[]
+  tags?: Record<string, PlayerTag>
+  onCycleTag?: (key: string) => void
 }
 
-export default function BigBoard({ draftedIds, hometownMap, managers, onNominate, adjustedPrices, draftLog, tags, onCycleTag }: Props) {
+export default function BigBoard({ draftedIds, hometownMap, managers, onNominate, adjustedPrices = new Map(), draftLog = [], tags = {}, onCycleTag = () => {} }: Props) {
   const [tab, setTab] = useState<PositionTab>('SS')
   const [query, setQuery] = useState('')
   const [sortKey, setSortKey] = useState<SortKey>('pr')
