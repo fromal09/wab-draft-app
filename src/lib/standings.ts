@@ -2,9 +2,9 @@ import { Manager, TeamStanding, Category, LOWER_IS_BETTER, isPitcher } from './t
 
 export function computeStandings(managers: Manager[]): TeamStanding[] {
   return managers.map(m => {
-    let r=0,hr=0,rbi=0,sb=0,ab=0,h_=0,so_h=0
+    let r=0,d2=0,d3=0,hr=0,rbi=0,sbn=0,so_h=0,ab=0
     let avg_n=0,obp_n=0
-    let w=0,sv=0,hld=0,k=0,bb=0,l=0,ip=0,era_er=0,whip_bb=0,whip_h=0
+    let w=0,sv=0,hld=0,k=0,bb=0,l=0,ip=0,era_er=0,whip_bb=0,whip_h=0,qa3=0
 
     m.roster.forEach(entry => {
       const p = entry.player
@@ -12,13 +12,14 @@ export function computeStandings(managers: Manager[]): TeamStanding[] {
       if (isPitcher(p)) {
         w   += p.w;  sv  += p.sv;  hld += p.hld
         k   += p.k;  bb  += p.bb;  l   += p.l
-        ip  += p.ip
-        era_er  += p.er * (p.ip / 9)   // ER = ERA × IP/9
+        qa3 += p.qa3; ip += p.ip
+        era_er  += p.er * (p.ip / 9)
         whip_bb += p.bb
-        whip_h  += (p.wh * p.ip) - p.bb  // H = WHIP×IP − BB
+        whip_h  += (p.wh * p.ip) - p.bb
       } else {
-        r   += p.r;  hr  += p.hr;  rbi += p.rb;  sb  += p.sb
-        ab  += p.ab; h_  += p.h;   so_h += p.so
+        r   += p.r;  d2  += p.d2;  d3  += p.d3
+        hr  += p.hr; rbi += p.rb;  sbn += p.sbn
+        so_h += p.so; ab += p.ab
         avg_n += p.av * p.ab
         obp_n += p.ob * p.ab
       }
@@ -29,7 +30,7 @@ export function computeStandings(managers: Manager[]): TeamStanding[] {
     const avg  = ab > 0 ? avg_n / ab : 0
     const obp  = ab > 0 ? obp_n / ab : 0
 
-    return { managerId: m.id, r, hr, rbi, sb, avg, obp, ab, h: h_, so_h, w, sv, hld, k, era, whip, ip, bb, l }
+    return { managerId: m.id, r, d2, d3, hr, rbi, sbn, so_h, avg, obp, ab, ip, w, l, sv, hld, era, whip, bb, k, qa3 }
   })
 }
 
@@ -39,11 +40,10 @@ export function rankByCategory(standings: TeamStanding[], cat: Category): Catego
   const getter = catGetter(cat)
   const values = standings.map(s => ({ managerId: s.managerId, value: getter(s) }))
 
-  // For "lower is better" stats, push 0-values to the bottom (not drafted yet)
   const sorted = [...values].sort((a, b) => {
     if (LOWER_IS_BETTER.includes(cat)) {
       if (a.value === 0 && b.value === 0) return 0
-      if (a.value === 0) return 1   // 0 ERA → rank last (no pitchers)
+      if (a.value === 0) return 1
       if (b.value === 0) return -1
       return a.value - b.value
     }
@@ -55,18 +55,19 @@ export function rankByCategory(standings: TeamStanding[], cat: Category): Catego
 
 function catGetter(cat: Category): (s: TeamStanding) => number {
   const map: Record<Category, (s: TeamStanding) => number> = {
-    R: s=>s.r, HR: s=>s.hr, RBI: s=>s.rbi, SB: s=>s.sb,
-    AVG: s=>s.avg, OBP: s=>s.obp,
-    W: s=>s.w, SV: s=>s.sv, HLD: s=>s.hld, K: s=>s.k,
-    ERA: s=>s.era, WHIP: s=>s.whip, BB: s=>s.bb, L: s=>s.l,
+    R:    s => s.r,    '2B': s => s.d2,  '3B': s => s.d3,
+    HR:   s => s.hr,   RBI: s => s.rbi,  SBN: s => s.sbn,
+    SO:   s => s.so_h, AVG: s => s.avg,  OBP: s => s.obp,
+    W:    s => s.w,    L:   s => s.l,    SV:  s => s.sv,
+    HLD:  s => s.hld,  ERA: s => s.era,  WHIP:s => s.whip,
+    BB:   s => s.bb,   K:   s => s.k,    QA3: s => s.qa3,
   }
   return map[cat] ?? (() => 0)
 }
 
 export function totalRankPoints(standings: TeamStanding[], managerId: string): number {
-  const cats: Category[] = ['R','HR','RBI','SB','AVG','OBP','W','SV','HLD','K','ERA','WHIP','BB','L']
   let pts = 0
-  for (const cat of cats) {
+  for (const cat of ['R','2B','3B','HR','RBI','SBN','SO','AVG','OBP','W','L','SV','HLD','ERA','WHIP','BB','K','QA3'] as Category[]) {
     const ranks = rankByCategory(standings, cat)
     const r = ranks.find(r => r.managerId === managerId)
     if (r) pts += r.rank
