@@ -11,7 +11,7 @@ const ALL_PLAYERS_FLAT: Player[] = (() => {
   const seen = new Set<string>()
   const out: Player[] = []
   for (const tab of POSITION_TABS) {
-    for (const p of (playersRaw as Record<string, Player[]>)[tab] ?? []) {
+    for (const p of (playersRaw as unknown as Record<string, Player[]>)[tab] ?? []) {
       const key = p.n + '|' + p.t
       if (!seen.has(key)) { seen.add(key); out.push(p) }
     }

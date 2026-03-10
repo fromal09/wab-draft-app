@@ -1,7 +1,7 @@
 import playersRaw from '@/data/players_raw.json'
 import { Player, isPitcher, POSITION_TABS } from '@/lib/types'
 
-const ALL = playersRaw as Record<string, Player[]>
+const ALL = playersRaw as unknown as Record<string, Player[]>
 
 export const HITTER_STAT_COLS = [
   { key: 'ab',  label: 'AB',   lob: false, w: 48, fmt: (v: number) => String(Math.round(v)) },

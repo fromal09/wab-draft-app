@@ -8,7 +8,7 @@ import RecommendationsPanel from './RecommendationsPanel'
 import { useRecommendations } from '@/hooks/useRecommendations'
 import { HITTER_STAT_COLS, PITCHER_STAT_COLS, getStatPct, statColor } from '@/lib/statPercentiles'
 
-const PLAYERS_RAW = playersRaw as Record<string, Player[]>
+const PLAYERS_RAW = playersRaw as unknown as Record<string, Player[]>
 
 const hasPos = (ps: string, pos: string) => ps.split(',').map(s => s.trim()).includes(pos)
 const PLAYERS: Record<string, Player[]> = {
