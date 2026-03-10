@@ -242,7 +242,7 @@ export default function AuctionConsole({
                         <span>HR <strong>{selectedPlayer.hr}</strong></span>
                         <span>RBI <strong>{selectedPlayer.rb}</strong></span>
                         <span>R <strong>{selectedPlayer.r}</strong></span>
-                        <span>SB <strong>{selectedPlayer.sb}</strong></span>
+                        <span>SBN <strong>{(selectedPlayer as any).sbn}</strong></span>
                         <span>AVG <strong>{selectedPlayer.av.toFixed(3)}</strong></span>
                         <span>OBP <strong>{selectedPlayer.ob.toFixed(3)}</strong></span>
                       </>

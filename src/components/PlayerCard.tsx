@@ -85,7 +85,7 @@ export default function PlayerCard({ player, managers, hometownMap, isDrafted, o
               <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.12em', marginBottom: 10 }}>PROJECTED HITTING</div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
                 {[
-                  ['HR', (p as any).hr], ['RBI', (p as any).rb], ['R', (p as any).r], ['SB', (p as any).sb],
+                  ['HR', (p as any).hr], ['RBI', (p as any).rb], ['R', (p as any).r], ['SBN', (p as any).sbn],
                   ['AB', (p as any).ab], ['H', (p as any).h], ['SO', (p as any).so], ['GP', p.gp],
                 ].map(([label, val]) => (
                   <StatBox key={label as string} label={label as string} value={val as number} />
