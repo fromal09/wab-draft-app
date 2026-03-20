@@ -45,15 +45,10 @@ interface Props {
   adjustedPrices: Map<string, number>
   tags: Record<string, PlayerTag>
   onCycleTag: (key: string) => void
-  currentNominator?: import('@/lib/types').Manager | null
-  advanceNomination?: () => void
-  notes?: Record<string, string>
-  onUpdateNote?: (key: string, note: string) => void
 }
 
 export default function AuctionConsole({
-  timer, managers, draftPlayer, draftedIds, hometownMap, selectedPlayer, setSelectedPlayer, adjustedPrices, tags, onCycleTag,
-  currentNominator, advanceNomination, notes, onUpdateNote
+  timer, managers, draftPlayer, draftedIds, hometownMap, selectedPlayer, setSelectedPlayer, adjustedPrices, tags, onCycleTag
 }: Props) {
   const [query, setQuery] = useState('')
   const [logging, setLogging] = useState(false)
@@ -123,7 +118,6 @@ export default function AuctionConsole({
       price = Math.max(1, price - discount)
     }
     draftPlayer(selectedPlayer, logManager, price, logType, logLevel)
-    if (advanceNomination) advanceNomination()
     setSoldFlash(true)
     setTimeout(() => setSoldFlash(false), 1200)
     setLogging(false)
@@ -154,15 +148,7 @@ export default function AuctionConsole({
       {/* LEFT: search + REC panel */}
       <div style={{ width: 280, flexShrink: 0, borderRight: '1px solid var(--border)', display: 'flex', flexDirection: 'column', background: 'var(--bg1)' }}>
         <div style={{ padding: '12px 12px 8px', borderBottom: '1px solid var(--border)', flexShrink: 0 }}>
-          <div style={{ fontSize: 9, color: 'var(--text3)', letterSpacing: '0.12em', marginBottom: 4 }}>NOMINATE PLAYER</div>
-          {currentNominator ? (
-            <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--gold)', marginBottom: 6, fontFamily: 'inherit' }}>
-              {currentNominator.name}
-              <span style={{ fontSize: 9, color: 'var(--text3)', fontWeight: 400, marginLeft: 8 }}>${currentNominator.budget - currentNominator.spent} left</span>
-            </div>
-          ) : (
-            <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', marginBottom: 6 }}>— Set order in ⚙ Setup</div>
-          )}
+          <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.12em', marginBottom: 8 }}>NOMINATE PLAYER</div>
           <input
             value={query}
             onChange={e => setQuery(e.target.value)}
@@ -444,30 +430,6 @@ export default function AuctionConsole({
               })()}
             </div>
 
-            {/* Notes */}
-            {(() => {
-              if (!selectedPlayer) return null
-              const pkey = selectedPlayer.id + '|' + selectedPlayer.n
-              const note = (notes ?? {})[pkey] ?? ''
-              return (
-                <div style={{ marginBottom: 14 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                    <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
-                    <span style={{ fontSize: 9, color: 'var(--text3)', letterSpacing: '0.15em' }}>NOTES</span>
-                    <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
-                  </div>
-                  <textarea
-                    value={note}
-                    onChange={e => onUpdateNote?.(pkey, e.target.value)}
-                    placeholder="Add notes about this player…"
-                    rows={2}
-                    style={{ width: '100%', padding: '8px 10px', background: 'var(--bg3)', border: '1px solid var(--border2)', borderRadius: 6, color: 'var(--text)', fontSize: 12, fontFamily: 'inherit', outline: 'none', resize: 'vertical', lineHeight: 1.5 }}
-                  />
-                  {note && <div style={{ fontSize: 9, color: 'var(--text3)', marginTop: 3, textAlign: 'right' }}>Auto-saved · persists across tabs</div>}
-                </div>
-              )
-            })()}
-
             {/* Timer buttons */}
             {!logging && (
               <div style={{ display: 'flex', gap: 10, marginBottom: 14, flexWrap: 'wrap' }}>
@@ -572,11 +534,10 @@ export default function AuctionConsole({
         {managers.map(m => {
           const rem = m.budget - m.spent
           const pct = Math.min(100, (m.spent / m.budget) * 100)
-          const isNominating = currentNominator?.id === m.id
           return (
-            <div key={m.id} style={{ padding: '9px 12px', borderBottom: '1px solid var(--border)', background: isNominating ? '#2a1e0688' : 'transparent' }}>
+            <div key={m.id} style={{ padding: '9px 12px', borderBottom: '1px solid var(--border)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                <span style={{ fontSize: 11, fontWeight: isNominating ? 800 : 700, color: isNominating ? 'var(--gold)' : 'var(--text)' }}>{isNominating ? '⚡ ' : ''}{m.name}</span>
+                <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--text)' }}>{m.name}</span>
                 <span style={{ fontSize: 13, fontWeight: 800, color: rem < 50 ? 'var(--red)' : rem < 100 ? 'var(--gold)' : 'var(--green)' }}>${rem}</span>
               </div>
               <div style={{ height: 4, background: 'var(--bg3)', borderRadius: 2, margin: '5px 0 4px', overflow: 'hidden' }}>

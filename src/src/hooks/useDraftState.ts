@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { Manager, DraftEntry, WAB_MANAGERS, Player, DraftType, RosterLevel } from '@/lib/types'
 import { computeAdjustedPrices } from '@/lib/adjustedPrices'
 import playersRaw from '@/data/players_raw.json'
@@ -8,6 +8,7 @@ import { computeStandings } from '@/lib/standings'
 
 const STORAGE_KEY = 'wab_draft_state_2025'
 
+// Flat deduplicated player list for price computation
 const ALL_PLAYERS_FLAT: Player[] = (() => {
   const seen = new Set<string>()
   const out: Player[] = []
@@ -35,50 +36,40 @@ export function useDraftState() {
   const [draftLog, setDraftLog] = useState<DraftEntry[]>([])
   const [hometownMap, setHometownMap] = useState<Record<string, string>>({})
   const [slotAssignments, setSlotAssignments] = useState<Record<string, Record<string, string>>>({})
-  const [nominationOrder, setNominationOrder] = useState<string[]>(() => WAB_MANAGERS.map(m => m.id))
-  const [nominationIndex, setNominationIndex] = useState(0)
-  const [skippedManagers, setSkippedManagers] = useState<string[]>([])
-  const [notes, setNotes] = useState<Record<string, string>>({})
 
-  const nominationOrderRef = useRef(nominationOrder)
-  const skippedManagersRef = useRef(skippedManagers)
-  useEffect(() => { nominationOrderRef.current = nominationOrder }, [nominationOrder])
-  useEffect(() => { skippedManagersRef.current = skippedManagers }, [skippedManagers])
-
+  // Load from localStorage on mount
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY)
       if (raw) {
-        const { managers: m, draftLog: dl, hometownMap: hm, slotAssignments: sa, nominationOrder: no, nominationIndex: ni, skippedManagers: sm, notes: n } = JSON.parse(raw)
+        const { managers: m, draftLog: dl, hometownMap: hm, slotAssignments: sa } = JSON.parse(raw)
         if (m) setManagers(m)
         if (dl) setDraftLog(dl)
         if (hm) setHometownMap(hm)
         if (sa) setSlotAssignments(sa)
-        if (no) setNominationOrder(no)
-        if (ni !== undefined) setNominationIndex(ni)
-        if (sm) setSkippedManagers(sm)
-        if (n) setNotes(n)
       }
     } catch {}
   }, [])
 
+  // Persist on every change
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        managers, draftLog, hometownMap, slotAssignments,
-        nominationOrder, nominationIndex, skippedManagers, notes,
-      }))
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ managers, draftLog, hometownMap, slotAssignments }))
     } catch {}
-  }, [managers, draftLog, hometownMap, slotAssignments, nominationOrder, nominationIndex, skippedManagers, notes])
+  }, [managers, draftLog, hometownMap, slotAssignments])
 
+  // Stable Set — only recomputed when draftLog changes
   const draftedIds = useMemo(
     () => new Set(draftLog.map(e => e.player.id + '|' + e.player.n)),
     [draftLog]
   )
 
   const draftPlayer = useCallback((
-    player: Player, managerId: string, price: number,
-    draftType: DraftType, rosterLevel: RosterLevel
+    player: Player,
+    managerId: string,
+    price: number,
+    draftType: DraftType,
+    rosterLevel: RosterLevel
   ) => {
     const entry: DraftEntry = { player, managerId, price, draftType, rosterLevel, timestamp: Date.now() }
     setDraftLog(prev => [entry, ...prev])
@@ -127,7 +118,6 @@ export function useDraftState() {
       setDraftLog([])
       setManagers(prev => prev.map(m => ({ ...m, spent: 0, roster: [] })))
       setSlotAssignments({})
-      setNominationIndex(0)
     }
   }, [])
 
@@ -143,40 +133,6 @@ export function useDraftState() {
     if (newSlotAssignments) setSlotAssignments(newSlotAssignments)
   }, [])
 
-  const updateNominationOrder = useCallback((order: string[]) => {
-    setNominationOrder(order)
-  }, [])
-
-  const toggleSkipManager = useCallback((managerId: string) => {
-    setSkippedManagers(prev =>
-      prev.includes(managerId) ? prev.filter(id => id !== managerId) : [...prev, managerId]
-    )
-  }, [])
-
-  const advanceNomination = useCallback(() => {
-    const order = nominationOrderRef.current
-    const skipped = skippedManagersRef.current
-    if (order.length === 0) return
-    setNominationIndex(prev => {
-      let next = (prev + 1) % order.length
-      let attempts = 0
-      while (skipped.includes(order[next]) && attempts < order.length) {
-        next = (next + 1) % order.length
-        attempts++
-      }
-      return next
-    })
-  }, [])
-
-  const updateNote = useCallback((key: string, note: string) => {
-    setNotes(prev => ({ ...prev, [key]: note }))
-  }, [])
-
-  const currentNominator = useMemo(() => {
-    const id = nominationOrder[nominationIndex]
-    return managers.find(m => m.id === id) ?? null
-  }, [managers, nominationOrder, nominationIndex])
-
   const adjustedPrices = useMemo(
     () => computeAdjustedPrices(ALL_PLAYERS_FLAT, draftedIds, managers),
     [draftedIds, managers]
@@ -189,7 +145,5 @@ export function useDraftState() {
     draftPlayer, undraftPlayer, updateManagerName, updateManagerBudget,
     setHometownPlayers, resetDraft, importState,
     slotAssignments, updateSlotAssignments,
-    nominationOrder, nominationIndex, skippedManagers, currentNominator, notes,
-    updateNominationOrder, toggleSkipManager, advanceNomination, updateNote,
   }
 }

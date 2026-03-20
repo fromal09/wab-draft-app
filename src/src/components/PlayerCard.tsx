@@ -16,8 +16,6 @@ interface Props {
   adjustedPrices?: Map<string, number>
   tag?: PlayerTag | null
   onCycleTag?: (key: string) => void
-  note?: string
-  onUpdateNote?: (key: string, note: string) => void
 }
 
 function StatMeta({ label, value }: { label: string; value: string | number }) {
@@ -39,7 +37,7 @@ function Divider({ label }: { label: string }) {
   )
 }
 
-export default function PlayerCard({ player, managers, hometownMap, isDrafted, onNominate, onClose, adjustedPrices, tag, onCycleTag, note = '', onUpdateNote }: Props) {
+export default function PlayerCard({ player, managers, hometownMap, isDrafted, onNominate, onClose, adjustedPrices, tag, onCycleTag }: Props) {
   const isPit = isPitcher(player)
   const hometownMgrId = hometownMap[player.n]
   const hometownMgr = hometownMgrId ? managers.find(m => m.id === hometownMgrId) : null
@@ -183,23 +181,6 @@ export default function PlayerCard({ player, managers, hometownMap, isDrafted, o
             </div>
           </div>
         )}
-
-        {/* ── NOTES ── */}
-        <div style={{ padding: '0 20px 16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '12px 0 8px' }}>
-            <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
-            <span style={{ fontSize: 9, color: 'var(--text3)', letterSpacing: '0.15em' }}>NOTES</span>
-            <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
-          </div>
-          <textarea
-            value={note}
-            onChange={e => onUpdateNote?.(player.id + '|' + player.n, e.target.value)}
-            placeholder="Add notes about this player…"
-            rows={3}
-            style={{ width: '100%', padding: '8px 10px', background: 'var(--bg3)', border: '1px solid var(--border2)', borderRadius: 6, color: 'var(--text)', fontSize: 12, fontFamily: 'inherit', outline: 'none', resize: 'vertical', lineHeight: 1.5 }}
-          />
-          {note && <div style={{ fontSize: 9, color: 'var(--text3)', marginTop: 3, textAlign: 'right' }}>Auto-saved · persists across tabs</div>}
-        </div>
 
         {/* ── ACTIONS ── */}
         <div style={{ padding: '12px 20px 16px', display: 'flex', gap: 8 }}>

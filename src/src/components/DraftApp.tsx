@@ -10,6 +10,7 @@ import RosterView from './RosterView'
 import StandingsView from './StandingsView'
 import PositionViz from './PositionViz'
 import SettingsModal, { TimerConfig, DEFAULT_TIMER_CONFIG } from './SettingsModal'
+
 import TargetFinder from './TargetFinder'
 
 export type AppView = 'board' | 'auction' | 'rosters' | 'standings' | 'viz' | 'targets'
@@ -19,6 +20,7 @@ export default function DraftApp() {
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [importError, setImportError] = useState<string | null>(null)
+  const fileInputRef = typeof window !== 'undefined' ? (() => { const r = { current: null as HTMLInputElement | null }; return r })() : { current: null }
 
   const draft = useDraftState()
 
@@ -63,7 +65,6 @@ export default function DraftApp() {
     }
     input.click()
   }
-
   const [timerConfig, setTimerConfig] = useState<TimerConfig>(() => {
     if (typeof window === 'undefined') return DEFAULT_TIMER_CONFIG
     try {
@@ -85,17 +86,18 @@ export default function DraftApp() {
     setView('auction')
   }
 
-  const navItems: { id: AppView; label: string }[] = [
-    { id: 'board',     label: 'Big Board'     },
-    { id: 'auction',   label: 'Auction'       },
-    { id: 'rosters',   label: 'Rosters'       },
-    { id: 'standings', label: 'Standings'     },
-    { id: 'targets',   label: 'Target Finder' },
-    { id: 'viz',       label: 'Position Viz'  },
+  const navItems: { id: AppView; label: string; icon: string }[] = [
+    { id: 'board',     label: 'Big Board',     icon: '⬛' },
+    { id: 'auction',   label: 'Auction',       icon: '⚡' },
+    { id: 'rosters',   label: 'Rosters',       icon: '📋' },
+    { id: 'standings', label: 'Standings',     icon: '📊' },
+    { id: 'targets',   label: 'Target Finder', icon: '🎯' },
+    { id: 'viz',       label: 'Position Viz',  icon: '📈' },
   ]
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', background: 'var(--bg)' }}>
+      {/* Header */}
       <header style={{
         display: 'flex', alignItems: 'center', gap: 16,
         padding: '0 16px', height: 48, flexShrink: 0,
@@ -107,6 +109,7 @@ export default function DraftApp() {
           <span style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.1em' }}>2025 DRAFT COMMAND CENTER</span>
         </div>
 
+        {/* Nav */}
         <nav style={{ display: 'flex', gap: 2, marginLeft: 16 }}>
           {navItems.map(item => (
             <button key={item.id} onClick={() => setView(item.id)}
@@ -123,7 +126,9 @@ export default function DraftApp() {
           ))}
         </nav>
 
+        {/* Right side info */}
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
+          {/* Budget summary */}
           <div style={{ fontSize: 10, color: 'var(--text3)', display: 'flex', gap: 10, flexWrap: 'wrap' }}>
             {draft.managers.map(m => (
               <span key={m.id} style={{ whiteSpace: 'nowrap' }}>
@@ -135,6 +140,7 @@ export default function DraftApp() {
               </span>
             ))}
           </div>
+
           <button onClick={() => setSettingsOpen(true)}
             style={{ padding: '4px 10px', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 4, color: 'var(--text2)', fontSize: 11, cursor: 'pointer', fontFamily: 'inherit' }}>
             ⚙ Setup
@@ -145,10 +151,12 @@ export default function DraftApp() {
           </button>
           <div style={{ width: 1, height: 20, background: 'var(--border)' }} />
           <button onClick={handleExport}
+            title="Save draft state to JSON file"
             style={{ padding: '4px 10px', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 4, color: 'var(--cyan)', fontSize: 11, cursor: 'pointer', fontFamily: 'inherit', fontWeight: 700 }}>
             ↓ Export
           </button>
           <button onClick={handleImportClick}
+            title="Load draft state from JSON file"
             style={{ padding: '4px 10px', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 4, color: 'var(--gold)', fontSize: 11, cursor: 'pointer', fontFamily: 'inherit', fontWeight: 700 }}>
             ↑ Import
           </button>
@@ -158,6 +166,7 @@ export default function DraftApp() {
         </div>
       </header>
 
+      {/* Main content */}
       <div style={{ flex: 1, overflow: 'hidden', display: 'flex' }}>
         {view === 'board' && (
           <BigBoard
@@ -169,8 +178,6 @@ export default function DraftApp() {
             draftLog={draft.draftLog}
             tags={tags}
             onCycleTag={cycleTag}
-            notes={draft.notes}
-            onUpdateNote={draft.updateNote}
           />
         )}
         {view === 'auction' && (
@@ -185,10 +192,6 @@ export default function DraftApp() {
             adjustedPrices={draft.adjustedPrices}
             tags={tags}
             onCycleTag={cycleTag}
-            currentNominator={draft.currentNominator}
-            advanceNomination={draft.advanceNomination}
-            notes={draft.notes}
-            onUpdateNote={draft.updateNote}
           />
         )}
         {view === 'rosters' && (
@@ -236,10 +239,6 @@ export default function DraftApp() {
           timerConfig={timerConfig}
           onUpdateTimer={handleUpdateTimer}
           onClose={() => setSettingsOpen(false)}
-          nominationOrder={draft.nominationOrder}
-          skippedManagers={draft.skippedManagers}
-          onUpdateNominationOrder={draft.updateNominationOrder}
-          onToggleSkipManager={draft.toggleSkipManager}
         />
       )}
     </div>

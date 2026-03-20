@@ -50,11 +50,9 @@ interface Props {
   draftLog: DraftEntry[]
   tags: Record<string, PlayerTag>
   onCycleTag: (key: string) => void
-  notes?: Record<string, string>
-  onUpdateNote?: (key: string, note: string) => void
 }
 
-export default function BigBoard({ draftedIds, hometownMap, managers, onNominate, adjustedPrices, draftLog, tags, onCycleTag, notes = {}, onUpdateNote = () => {} }: Props) {
+export default function BigBoard({ draftedIds, hometownMap, managers, onNominate, adjustedPrices, draftLog, tags, onCycleTag }: Props) {
   const [tab, setTab] = useState<PositionTab>('SS')
   const [query, setQuery] = useState('')
   const [sortKey, setSortKey] = useState<SortKey>('pr')
@@ -428,8 +426,6 @@ export default function BigBoard({ draftedIds, hometownMap, managers, onNominate
           adjustedPrices={adjustedPrices}
           tag={tags[selectedPlayer.id + '|' + selectedPlayer.n] ?? null}
           onCycleTag={onCycleTag}
-          note={selectedPlayer ? (notes[selectedPlayer.id + '|' + selectedPlayer.n] ?? '') : ''}
-          onUpdateNote={onUpdateNote}
         />
       )}
     </div>
