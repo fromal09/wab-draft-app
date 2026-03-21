@@ -6,6 +6,18 @@ import CategoryRadar from './CategoryRadar'
 import { HitterBars, PitcherBars } from './SavantBars'
 import RollingXwOBA from './RollingXwOBA'
 
+function normName(s: string): string {
+  return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+}
+function plRank(map: Record<string, number>, name: string): number | undefined {
+  if (map[name] !== undefined) return map[name]
+  const norm = normName(name)
+  const key = Object.keys(map).find(k => normName(k) === norm)
+  return key ? map[key] : undefined
+}
+
+
+
 // ─── Pitcher List SV Rankings ────────────────────────────────────────────────
 const PL_SV_RANKS: Record<string, number> = {
   'Mason Miller': 1, 'Edwin Díaz': 2, 'Cade Smith': 3, 'Devin Williams': 4,
@@ -212,9 +224,9 @@ export default function PlayerCard({ player, managers, hometownMap, isDrafted, o
                 })()}
                 {(() => {
                   const badges = [
-                    PL_HLD_RANKS[player.n] ? { r: PL_HLD_RANKS[player.n]!, label: 'PL HLD' } : null,
-                    PL_SV_RANKS[player.n]  ? { r: PL_SV_RANKS[player.n]!,  label: 'PL SV'  } : null,
-                    PL_SP_RANKS[player.n]  ? { r: PL_SP_RANKS[player.n]!,  label: 'PL SP'  } : null,
+                    plRank(PL_HLD_RANKS, player.n) ? { r: plRank(PL_HLD_RANKS, player.n)!, label: 'PL HLD' } : null,
+                    plRank(PL_SV_RANKS, player.n)  ? { r: plRank(PL_SV_RANKS, player.n)!,  label: 'PL SV'  } : null,
+                    plRank(PL_SP_RANKS, player.n)  ? { r: plRank(PL_SP_RANKS, player.n)!,  label: 'PL SP'  } : null,
                   ].filter(Boolean) as { r: number; label: string }[]
                   if (badges.length === 0) return null
                   return (

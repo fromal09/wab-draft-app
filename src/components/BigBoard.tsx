@@ -98,6 +98,18 @@ const PL_SP_RANKS: Record<string, number> = {
   'Justin Verlander': 97, 'Kyle Leahy': 98, 'Justin Steele': 99, 'Shane Bieber': 100,
 }
 
+
+// Normalize name for rank lookup — strips diacritics for fuzzy matching
+function normName(s: string): string {
+  return s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+}
+function plRank(map: Record<string, number>, name: string): number | undefined {
+  if (map[name] !== undefined) return map[name]
+  const norm = normName(name)
+  const key = Object.keys(map).find(k => normName(k) === norm)
+  return key ? map[key] : undefined
+}
+
 // ─── Pitcher List HLD Rankings ───────────────────────────────────────────────
 const PL_HLD_RANKS: Record<string, number> = {
   'Jeremiah Estrada': 1, 'Garrett Whitlock': 2, 'Adrian Morejon': 3,
@@ -206,14 +218,14 @@ export default function BigBoard({ draftedIds, hometownMap, managers, onNominate
         av = parseFloat((a as any).adp) || 9999
         bv = parseFloat((b as any).adp) || 9999
       } else if (sortKey === 'pl_hld_rk') {
-        av = PL_HLD_RANKS[(a as any).n] ?? 9999
-        bv = PL_HLD_RANKS[(b as any).n] ?? 9999
+        av = plRank(PL_HLD_RANKS, (a as any).n) ?? 9999
+        bv = plRank(PL_HLD_RANKS, (b as any).n) ?? 9999
       } else if (sortKey === 'pl_sv_rk') {
-        av = PL_SV_RANKS[(a as any).n] ?? 9999
-        bv = PL_SV_RANKS[(b as any).n] ?? 9999
+        av = plRank(PL_SV_RANKS, (a as any).n) ?? 9999
+        bv = plRank(PL_SV_RANKS, (b as any).n) ?? 9999
       } else if (sortKey === 'pl_sp_rk') {
-        av = PL_SP_RANKS[(a as any).n] ?? 9999
-        bv = PL_SP_RANKS[(b as any).n] ?? 9999
+        av = plRank(PL_SP_RANKS, (a as any).n) ?? 9999
+        bv = plRank(PL_SP_RANKS, (b as any).n) ?? 9999
       } else {
         const ar = (a as any)[sortKey]; av = typeof ar === 'number' ? ar : 0
         const br = (b as any)[sortKey]; bv = typeof br === 'number' ? br : 0
@@ -455,9 +467,9 @@ export default function BigBoard({ draftedIds, hometownMap, managers, onNominate
                     return <span style={{ fontSize: 9, color: tc.color, background: tc.bg, padding: '1px 5px', borderRadius: 3, fontWeight: 700 }}>{tc.emoji} {tc.label}</span>
                   })()}
                   {isPit && !isSearching && (() => {
-                    const hldRank = tab === 'RP' ? PL_HLD_RANKS[p.n] : undefined
-                    const svRank  = tab === 'RP' ? PL_SV_RANKS[p.n]  : undefined
-                    const spRank  = tab === 'SP' ? PL_SP_RANKS[p.n]  : undefined
+                    const hldRank = tab === 'RP' ? plRank(PL_HLD_RANKS, p.n) : undefined
+                    const svRank  = tab === 'RP' ? plRank(PL_SV_RANKS, p.n)  : undefined
+                    const spRank  = tab === 'SP' ? plRank(PL_SP_RANKS, p.n)  : undefined
                     const badges = [
                       hldRank ? { r: hldRank, label: 'PL HLD' } : null,
                       svRank  ? { r: svRank,  label: 'PL SV'  } : null,
@@ -477,7 +489,7 @@ export default function BigBoard({ draftedIds, hometownMap, managers, onNominate
                     )
                   })()}
                   {false && tab === 'RP' && !isSearching && (() => {
-                    const rank = PL_HLD_RANKS[p.n]
+                    const rank = plRank(PL_HLD_RANKS, p.n)
                     if (!rank) return null
                     return (
                       <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 3,
