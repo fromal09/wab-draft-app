@@ -135,7 +135,7 @@ export default function AuctionConsole({
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement || e.target instanceof HTMLTextAreaElement) return
-      if (e.code === 'Space' && (timer.phase === 'bidding' || timer.phase === 'going_once' || timer.phase === 'going_twice')) {
+      if (e.code === 'Space' && (timer.phase === 'bidding' || timer.phase === 'going_once' || timer.phase === 'going_twice' || timer.phase === 'sold')) {
         e.preventDefault()
         timer.resetBid()
       }
@@ -276,6 +276,18 @@ export default function AuctionConsole({
         <div style={{ padding: '10px 16px', background: 'var(--bg2)', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 14, flexShrink: 0 }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: timerColor, minWidth: 150 }}>
             {phaseLabel[timer.phase]}
+            {timer.phase === 'sold' && (
+              <button
+                onClick={() => { timer.resetBid(); }}
+                style={{
+                  marginLeft: 10, fontSize: 10, fontWeight: 700, padding: '3px 10px',
+                  background: '#1e3a5f', border: '1px solid #3b82f6', borderRadius: 4,
+                  color: '#93c5fd', cursor: 'pointer', fontFamily: 'inherit'
+                }}
+              >
+                ↺ Restart Bid
+              </button>
+            )}
           </div>
           <div style={{ flex: 1, height: 8, background: 'var(--bg3)', borderRadius: 4, overflow: 'hidden' }}>
             <div style={{ height: '100%', borderRadius: 4, width: `${timer.progress}%`, background: timerColor, transition: 'width 0.8s linear, background 0.3s' }} />
