@@ -468,16 +468,6 @@ export default function PlayerCard({ player, managers, hometownMap, isDrafted, o
           )
         })()}
 
-        {/* ── RECENT NEWS ── */}
-        <div style={{ margin: '10px 20px 0', padding: '12px 14px', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 8 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-            <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
-            <span style={{ fontSize: 9, color: 'var(--text3)', letterSpacing: '0.15em' }}>RECENT NEWS</span>
-            <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
-          </div>
-          <RecentNews playerName={player.n} />
-        </div>
-
         {/* ── ZONE 2: blurb + projections | radar ── */}
         <div style={{ display: 'grid', gridTemplateColumns: hasRadar ? '1fr 1fr' : '1fr', alignItems: 'start', borderBottom: '1px solid var(--border)' }}>
 
