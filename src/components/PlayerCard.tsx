@@ -254,11 +254,66 @@ function Divider({ label }: { label: string }) {
 
 
 // ─── Recent News ─────────────────────────────────────────────────────────────
+function NewsItem({ item }: { item: { title: string; pubDate: string; source: string; link: string } }) {
+  const [expanded, setExpanded] = useState(false)
+  const [desc, setDesc] = useState<string | null>(null)
+  const [loadingDesc, setLoadingDesc] = useState(false)
+
+  function toggle(e: React.MouseEvent) {
+    e.preventDefault()
+    e.stopPropagation()
+    if (!expanded && desc === null && item.link) {
+      setLoadingDesc(true)
+      fetch(`/api/meta-description?url=${encodeURIComponent(item.link)}`)
+        .then(r => r.json())
+        .then(data => { setDesc(data.description || 'No description available.'); setLoadingDesc(false) })
+        .catch(() => { setDesc('Could not load description.'); setLoadingDesc(false) })
+    }
+    setExpanded(p => !p)
+  }
+
+  return (
+    <div style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 6, overflow: 'hidden' }}>
+      <div style={{ padding: '9px 12px' }}>
+        
+          href={item.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ fontSize: 12, fontWeight: 700, color: 'var(--cyan)', textDecoration: 'none', lineHeight: 1.4, display: 'block' }}
+          onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
+          onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
+        >
+          {item.title}
+        </a>
+        <div style={{ display: 'flex', gap: 8, marginTop: 3, alignItems: 'center' }}>
+          {item.source && <span style={{ fontSize: 9, color: 'var(--text3)' }}>{item.source}</span>}
+          {item.pubDate && (
+            <span style={{ fontSize: 9, color: 'var(--text3)' }}>
+              {new Date(item.pubDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+            </span>
+          )}
+          <button onClick={toggle}
+            style={{ fontSize: 9, color: 'var(--cyan)', background: 'none', border: 'none', cursor: 'pointer', padding: '0 2px', fontFamily: 'inherit' }}>
+            {expanded ? '▲ less' : '▼ more'}
+          </button>
+        </div>
+      </div>
+      {expanded && (
+        <div style={{ padding: '8px 12px 10px', fontSize: 11, color: 'var(--text2)', lineHeight: 1.6, borderTop: '1px solid var(--border)' }}>
+          {loadingDesc ? 'Loading…' : desc}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function RecentNews({ playerName }: { playerName: string }) {
-  const [items, setItems] = useState<{ title: string; description: string; pubDate: string; link: string }[]>([])
-  const [loading, setLoading] = useState(true)
+  const [items, setItems] = useState<{ title: string; pubDate: string; source: string; link: string }[]>([])
+  const [loading, setLoading] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
     setLoading(true)
     fetch(`/api/player-news?name=${encodeURIComponent(playerName)}`)
       .then(r => r.json())
@@ -266,39 +321,13 @@ function RecentNews({ playerName }: { playerName: string }) {
       .catch(() => setLoading(false))
   }, [playerName])
 
-  if (loading) return (
-    <div style={{ padding: '8px 0', fontSize: 11, color: 'var(--text3)', textAlign: 'center' }}>
-      Loading news…
-    </div>
-  )
-
-  if (items.length === 0) return (
-    <div style={{ padding: '8px 0', fontSize: 11, color: 'var(--text3)', fontStyle: 'italic' }}>
-      No recent news found.
-    </div>
-  )
+  if (!mounted) return null
+  if (loading) return <div style={{ padding: '8px 0', fontSize: 11, color: 'var(--text3)', textAlign: 'center' }}>Loading news…</div>
+  if (items.length === 0) return <div style={{ padding: '8px 0', fontSize: 11, color: 'var(--text3)', fontStyle: 'italic' }}>No recent news found.</div>
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-      {items.map((item, i) => (
-        <div key={i} style={{ padding: '10px 12px', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 6, borderLeft: '3px solid var(--border2)' }}>
-          {item.title && (
-            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text)', marginBottom: 4, lineHeight: 1.4 }}>
-              {item.title}
-            </div>
-          )}
-          {item.description && (
-            <div style={{ fontSize: 11, color: 'var(--text2)', lineHeight: 1.55 }}>
-              {item.description.replace(/<[^>]+>/g, '').trim()}
-            </div>
-          )}
-          {item.pubDate && (
-            <div style={{ fontSize: 9, color: 'var(--text3)', marginTop: 5 }}>
-              {new Date(item.pubDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-            </div>
-          )}
-        </div>
-      ))}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      {items.map((item, i) => <NewsItem key={i} item={item} />)}
     </div>
   )
 }
