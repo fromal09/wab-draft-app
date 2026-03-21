@@ -10,8 +10,13 @@ let cachedVoice: SpeechSynthesisVoice | null = null
 function getVoice(): SpeechSynthesisVoice | null {
   if (cachedVoice) return cachedVoice
   const voices = window.speechSynthesis.getVoices()
-  cachedVoice = voices.find(v => v.name === 'Daniel') ??
-    voices.find(v => v.lang === 'en-GB') ?? null
+  cachedVoice = voices.find(v => v.name === 'Samantha') ??
+    voices.find(v => v.name === 'Victoria') ??
+    voices.find(v => v.name === 'Karen') ??
+    voices.find(v => v.name === 'Moira') ??
+    voices.find(v => v.name === 'Microsoft Zira Desktop') ??
+    voices.find(v => v.lang === 'en-US' && v.localService) ??
+    voices.find(v => v.lang.startsWith('en')) ?? null
   return cachedVoice
 }
 
