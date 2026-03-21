@@ -6,6 +6,65 @@ import CategoryRadar from './CategoryRadar'
 import { HitterBars, PitcherBars } from './SavantBars'
 import RollingXwOBA from './RollingXwOBA'
 
+// ─── Pitcher List SV Rankings ────────────────────────────────────────────────
+const PL_SV_RANKS: Record<string, number> = {
+  'Mason Miller': 1, 'Edwin Díaz': 2, 'Cade Smith': 3, 'Devin Williams': 4,
+  'Andrés Muñoz': 5, 'Jhoan Duran': 6, 'Aroldis Chapman': 7, 'David Bednar': 8,
+  'Daniel Palencia': 9, 'Jeff Hoffman': 10, 'Ryan Helsley': 11, 'Pete Fairbanks': 12,
+  'Griffin Jax': 13, 'Josh Hader': 14, 'Trevor Megill': 15, 'Emilio Pagán': 16,
+  'Raisel Iglesias': 17, 'Kenley Jansen': 18, 'Robert Suarez': 19, 'Abner Uribe': 20,
+  'Bryan Abreu': 21, 'Ryan Walker': 22, 'Dennis Santana': 23, 'Seranthony Domínguez': 24,
+  'Robert Garcia': 25, 'Paul Sewald': 26, 'Carlos Estévez': 27, 'Kirby Yates': 28,
+  'Jeremiah Estrada': 29, 'Garrett Whitlock': 30, 'Tanner Scott': 31, 'Adrian Morejon': 32,
+  'Grant Taylor': 33, 'Garrett Cleavinger': 34, 'Kyle Finnegan': 35, 'Will Vest': 36,
+  'Edwin Uceta': 37, "Riley O'Brien": 38, 'Clayton Beeter': 39, 'Taylor Rogers': 40,
+  'Drew Pomeranz': 41, 'JoJo Romero': 42, 'Chris Martin': 43, 'Jordan Romano': 44,
+  'Cole Henry': 45, 'Victor Vodnik': 46, 'Mark Leiter Jr.': 47, 'Ryne Stanek': 48,
+  'Jordan Leasure': 49, 'Hogan Harris': 50, 'Bryan Baker': 51, 'Matt Svanson': 52,
+  'Liam Hendriks': 53, 'Matt Strahm': 54, 'Kevin Ginkel': 55, 'Lucas Erceg': 56,
+  'Jonathan Loáisiga': 57, 'Elvis Alvarado': 58, 'Scott Barlow': 59, 'Justin Sterner': 60,
+  'Matt Brash': 61, 'Luke Weaver': 62, 'Phil Maton': 63, 'Mason Montgomery': 64,
+  'Camilo Doval': 65, 'Louis Varland': 66, 'José Alvarado': 67, 'Jose A. Ferrer': 68,
+  'Brad Keller': 69, 'Hunter Gaddis': 70, 'Steven Okert': 71, 'Fernando Cruz': 72,
+  'Graham Ashcraft': 73, 'Connor Phillips': 74, 'Gus Varland': 75, 'Gregory Soto': 76,
+  'Tony Santillan': 77, 'Hunter Harvey': 78, 'Justin Slaten': 79, 'Juan Mejia': 80,
+  'Alex Vesia': 81, 'Dylan Lee': 82, 'Gabe Speier': 83, 'Calvin Faucher': 84,
+  'Isaac Mattson': 85, 'Andrew Nardi': 86, 'Nick Mears': 87, 'Anthony Bender': 88,
+  'Cole Sands': 89, 'Angel Zerpa': 90, 'Shawn Armstrong': 91, 'Eric Orze': 92,
+  'Josh Sborz': 93, 'Griff McGarry': 94, 'Orion Kerkering': 95, 'Gregory Santos': 96,
+  'Zach Agnos': 97, 'Eduard Bazardo': 98, 'Bryan King': 99, 'Erik Sabrowski': 100,
+}
+
+// ─── Pitcher List SP Rankings ────────────────────────────────────────────────
+const PL_SP_RANKS: Record<string, number> = {
+  'Garrett Crochet': 1, 'Paul Skenes': 2, 'Tarik Skubal': 3, 'Bryan Woo': 4,
+  'Yoshinobu Yamamoto': 5, 'Hunter Brown': 6, 'Cristopher Sánchez': 7, 'Max Fried': 8,
+  'Shohei Ohtani': 9, 'Jacob deGrom': 10, 'Logan Gilbert': 11, 'Logan Webb': 12,
+  'Freddy Peralta': 13, 'Chris Sale': 14, 'Cole Ragans': 15, 'George Kirby': 16,
+  'Tyler Glasnow': 17, 'Joe Ryan': 18, 'Kyle Bradish': 19, 'Cam Schlittler': 20,
+  'Jesús Luzardo': 21, 'Eury Pérez': 22, 'Framber Valdez': 23, 'Nolan McLean': 24,
+  'Nick Pivetta': 25, 'Kevin Gausman': 26, 'Shota Imanaga': 27, 'Nathan Eovaldi': 28,
+  'Trevor Rogers': 29, 'Sandy Alcantara': 30, 'Bubba Chandler': 31, 'Dylan Cease': 32,
+  'Ryan Pepiot': 33, 'Jacob Misiorowski': 34, 'Drew Rasmussen': 35, 'Tatsuya Imai': 36,
+  'Nick Lodolo': 37, 'Edward Cabrera': 38, 'Cade Horton': 39, 'Robbie Ray': 40,
+  'Michael King': 41, 'Kris Bubic': 42, 'MacKenzie Gore': 43, 'Chase Burns': 44,
+  'Zack Wheeler': 45, 'Gerrit Cole': 46, 'Shane McClanahan': 47, 'Aaron Nola': 48,
+  'Sonny Gray': 49, 'Matthew Boyd': 50, 'Zac Gallen': 51, 'Kodai Senga': 52,
+  'Ranger Suárez': 53, 'Andrew Abbott': 54, 'Ryan Weathers': 55, 'Gavin Williams': 56,
+  'Shane Baz': 57, 'Connelly Early': 58, 'Blake Snell': 59, 'Carlos Rodón': 60,
+  'Bryce Miller': 61, 'Jared Jones': 62, 'Cody Ponce': 63, 'Mike Burrows': 64,
+  'Mick Abel': 65, 'Emmet Sheehan': 66, 'Brandon Sproat': 67, 'Braxton Ashcraft': 68,
+  'Will Warren': 69, 'Kyle Harrison': 70, 'Spencer Strider': 71, 'Andrew Painter': 72,
+  'Ryne Nelson': 73, 'Zach Eflin': 74, 'Noah Cameron': 75, 'Brayan Bello': 76,
+  'Luis Castillo': 77, 'Merrill Kelly': 78, 'Tanner Bibee': 79, 'Dustin May': 80,
+  'Matthew Liberatore': 81, 'Max Scherzer': 82, 'Joey Cantillo': 83, 'Spencer Arrighetti': 84,
+  'Jack Leiter': 85, 'Landen Roupp': 86, 'Max Meyer': 87, 'Jack Flaherty': 88,
+  'Luis Gil': 89, 'Justin Wrobleski': 90, 'Parker Messick': 91, 'Didier Fuentes': 92,
+  'Slade Cecconi': 93, 'Anthony Kay': 94, 'Tyler Mahle': 95, 'Brandon Williamson': 96,
+  'Justin Verlander': 97, 'Kyle Leahy': 98, 'Justin Steele': 99, 'Shane Bieber': 100,
+}
+
+
 // ─── Pitcher List HLD Rankings ───────────────────────────────────────────────
 const PL_HLD_RANKS: Record<string, number> = {
   'Jeremiah Estrada': 1, 'Garrett Whitlock': 2, 'Adrian Morejon': 3,
@@ -152,14 +211,22 @@ export default function PlayerCard({ player, managers, hometownMap, isDrafted, o
                   )
                 })()}
                 {(() => {
-                  const rank = PL_HLD_RANKS[player.n]
-                  if (!rank) return null
+                  const badges = [
+                    PL_HLD_RANKS[player.n] ? { r: PL_HLD_RANKS[player.n]!, label: 'PL HLD' } : null,
+                    PL_SV_RANKS[player.n]  ? { r: PL_SV_RANKS[player.n]!,  label: 'PL SV'  } : null,
+                    PL_SP_RANKS[player.n]  ? { r: PL_SP_RANKS[player.n]!,  label: 'PL SP'  } : null,
+                  ].filter(Boolean) as { r: number; label: string }[]
+                  if (badges.length === 0) return null
                   return (
-                    <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 4,
-                      color: rank <= 25 ? '#4ade80' : rank <= 50 ? '#a3e635' : rank <= 75 ? '#e2e8f0' : '#fb923c',
-                      background: 'var(--bg3)', border: '1px solid var(--border2)' }}>
-                      PL HLD #{rank}
-                    </span>
+                    <>
+                      {badges.map(({ r, label }) => (
+                        <span key={label} style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 4,
+                          color: r <= 25 ? '#4ade80' : r <= 50 ? '#a3e635' : r <= 75 ? '#e2e8f0' : '#fb923c',
+                          background: 'var(--bg3)', border: '1px solid var(--border2)' }}>
+                          {label} #{r}
+                        </span>
+                      ))}
+                    </>
                   )
                 })()}
                 {isDrafted && (
