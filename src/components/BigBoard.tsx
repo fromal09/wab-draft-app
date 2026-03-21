@@ -39,7 +39,44 @@ const POS_COLORS: Record<string, string> = {
 
 const PROSPECT_COLOR = '#a78bfa'
 
-type SortKey = 'pr'|'sc'|'ab'|'r'|'d2'|'d3'|'hr'|'rb'|'sbn'|'so'|'av'|'ob'|'ip'|'w'|'l'|'sv'|'hld'|'er'|'wh'|'bb'|'k'|'qa3'|'age'|'adp_n'|'prospect_rank'
+// ─── Pitcher List HLD Rankings ───────────────────────────────────────────────
+const PL_HLD_RANKS: Record<string, number> = {
+  'Jeremiah Estrada': 1, 'Garrett Whitlock': 2, 'Adrian Morejon': 3,
+  'Tanner Scott': 4, 'Robert Suarez': 5, 'Edwin Uceta': 6,
+  'Matt Brash': 7, 'Phil Maton': 8, 'Garrett Cleavinger': 9,
+  'Gabe Speier': 10, 'Dylan Lee': 11, 'Alex Vesia': 12,
+  'Luke Weaver': 13, 'Jason Adam': 14, 'Brad Keller': 15,
+  'Will Vest': 16, 'Kyle Finnegan': 17, 'Hunter Gaddis': 18,
+  'Tyler Rogers': 19, 'Grant Taylor': 20, 'Louis Varland': 21,
+  'Fernando Cruz': 22, 'Erik Sabrowski': 23, 'Mason Montgomery': 24,
+  'Aaron Ashby': 25, 'Matt Strahm': 26, 'Bryan Baker': 27,
+  'Jose A. Ferrer': 28, 'José Alvarado': 29, 'Andrew Nardi': 30,
+  'Camilo Doval': 31, 'Steven Okert': 32, 'Caleb Thielbar': 33,
+  'Brooks Raley': 34, 'Matt Svanson': 35, 'Andrew Kittredge': 36,
+  'Bryan King': 37, 'Drew Pomeranz': 38, 'Jordan Leasure': 39,
+  'Graham Ashcraft': 40, 'Justin Slaten': 41, 'Orion Kerkering': 42,
+  'Shawn Armstrong': 43, 'Tony Santillan': 44, 'Gregory Soto': 45,
+  'Anthony Bender': 46, 'Chris Martin': 47, 'Lucas Erceg': 48,
+  'Jared Koenig': 49, 'Connor Phillips': 50, 'Justin Sterner': 51,
+  'Brendon Little': 52, 'Braydon Fisher': 53, 'Eduard Bazardo': 54,
+  'Hunter Harvey': 55, 'Elvis Alvarado': 56, 'Mason Fluharty': 57,
+  'Rico Garcia': 58, 'Jonathan Bowlan': 59, 'Carmen Mlodzinski': 60,
+  'Hunter Bigge': 61, 'Dylan Dodd': 62, 'Ryan Zeferjahn': 63,
+  'Jack Dreyer': 64, 'Ryne Stanek': 65, 'Jonathan Loáisiga': 66,
+  'Edgardo Henriquez': 67, 'Hogan Harris': 68, 'Angel Zerpa': 69,
+  'Cole Sands': 70, 'Isaac Mattson': 71, 'Dietrich Enns': 72,
+  'Lake Bachar': 73, 'Matt Festa': 74, 'Tyler Holton': 75,
+  'Calvin Faucher': 76, 'JoJo Romero': 77, 'Nick Mears': 78,
+  'Grant Anderson': 79, 'Pierce Johnson': 80, 'Yennier Cano': 81,
+  'Tanner Banks': 82, 'Tyler Kinley': 83, 'Blake Treinen': 84,
+  'Kody Funderburk': 85, 'John Schreiber': 86, 'Scott Barlow': 87,
+  'Ryan Thompson': 88, 'José Buttó': 89, 'Jordan Romano': 90,
+  'Brock Burke': 91, 'David Morgan': 92, 'Keegan Akin': 93,
+  'Jacob Webb': 94, 'Aaron Bummer': 95, 'Juan Mejia': 96,
+  'Eric Orze': 97, 'Erik Miller': 98, 'Will Klein': 99, 'DL Hall': 100,
+}
+
+type SortKey = 'pr'|'sc'|'ab'|'r'|'d2'|'d3'|'hr'|'rb'|'sbn'|'so'|'av'|'ob'|'ip'|'w'|'l'|'sv'|'hld'|'er'|'wh'|'bb'|'k'|'qa3'|'age'|'adp_n'|'prospect_rank'|'pl_hld_rk'
 
 interface Props {
   draftedIds: Set<string>
@@ -109,6 +146,9 @@ export default function BigBoard({ draftedIds, hometownMap, managers, onNominate
       if (sortKey === 'adp_n') {
         av = parseFloat((a as any).adp) || 9999
         bv = parseFloat((b as any).adp) || 9999
+      } else if (sortKey === 'pl_hld_rk') {
+        av = PL_HLD_RANKS[(a as any).n] ?? 9999
+        bv = PL_HLD_RANKS[(b as any).n] ?? 9999
       } else {
         const ar = (a as any)[sortKey]; av = typeof ar === 'number' ? ar : 0
         const br = (b as any)[sortKey]; bv = typeof br === 'number' ? br : 0
@@ -144,7 +184,7 @@ export default function BigBoard({ draftedIds, hometownMap, managers, onNominate
     {key:'pr',label:'$'},{key:'sc',label:'SCR'},{key:'ip',label:'IP'},
     {key:'w',label:'W'},{key:'l',label:'L'},{key:'sv',label:'SV'},{key:'hld',label:'HLD'},
     {key:'er',label:'ERA'},{key:'wh',label:'WHIP'},{key:'bb',label:'BB'},{key:'k',label:'K'},{key:'qa3',label:'QA3'},
-    {key:'age',label:'AGE'},
+    {key:'age',label:'AGE'},{key:'pl_hld_rk',label:'PL HLD Rk'},
   ]
   const prosSorts: {key: SortKey; label: string}[] = [
     {key:'prospect_rank',label:'RANK'},{key:'pr',label:'$'},{key:'sc',label:'SCR'},
