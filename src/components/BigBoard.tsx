@@ -488,17 +488,7 @@ export default function BigBoard({ draftedIds, hometownMap, managers, onNominate
                       </>
                     )
                   })()}
-                  {false && tab === 'RP' && !isSearching && (() => {
-                    const rank = plRank(PL_HLD_RANKS, p.n)
-                    if (!rank) return null
-                    return (
-                      <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 3,
-                        color: rank <= 25 ? '#4ade80' : rank <= 50 ? '#a3e635' : rank <= 75 ? '#e2e8f0' : '#fb923c',
-                        background: 'var(--bg3)', border: '1px solid var(--border2)' }}>
-                        PL HLD #{rank}
-                      </span>
-                    )
-                  })()}
+
                   {(isSearching || isProsTab) && p.ps.split(',').map(pos => (
                     <span key={pos} style={{ fontSize: 9, color: POS_COLORS[pos.trim()] ?? 'var(--text3)', background: (POS_COLORS[pos.trim()] ?? '#666') + '18', padding: '1px 4px', borderRadius: 3 }}>{pos.trim()}</span>
                   ))}
