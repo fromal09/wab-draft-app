@@ -31,7 +31,7 @@ export function useAuctionTimer(config: TimerConfig = DEFAULT_TIMER_CONFIG) {
     setPhase(p)
     setSecondsLeft(dur)
 
-    if (p === 'going_once')  speak('Going once')
+    if (p === 'going_once')  playAudio('/audio/going-once.mp3')
     if (p === 'going_twice') playAudio('/audio/going-twice.mp3')
 
     let remaining = dur
