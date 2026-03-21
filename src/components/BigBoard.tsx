@@ -205,9 +205,15 @@ export default function BigBoard({ draftedIds, hometownMap, managers, onNominate
       if (sortKey === 'adp_n') {
         av = parseFloat((a as any).adp) || 9999
         bv = parseFloat((b as any).adp) || 9999
-      } else if (sortKey === 'pl_hld_rk'|'pl_sv_rk'|'pl_sp_rk') {
+      } else if (sortKey === 'pl_hld_rk') {
         av = PL_HLD_RANKS[(a as any).n] ?? 9999
         bv = PL_HLD_RANKS[(b as any).n] ?? 9999
+      } else if (sortKey === 'pl_sv_rk') {
+        av = PL_SV_RANKS[(a as any).n] ?? 9999
+        bv = PL_SV_RANKS[(b as any).n] ?? 9999
+      } else if (sortKey === 'pl_sp_rk') {
+        av = PL_SP_RANKS[(a as any).n] ?? 9999
+        bv = PL_SP_RANKS[(b as any).n] ?? 9999
       } else {
         const ar = (a as any)[sortKey]; av = typeof ar === 'number' ? ar : 0
         const br = (b as any)[sortKey]; bv = typeof br === 'number' ? br : 0
