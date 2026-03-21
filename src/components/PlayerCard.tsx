@@ -1,4 +1,5 @@
 'use client'
+import { useState, useEffect } from 'react'
 import { Player, isPitcher, Manager, PlayerTag, TAG_CONFIG } from '@/lib/types'
 import { PriceBadge } from './PriceBadge'
 import PlayerStatGrid from './PlayerStatGrid'
@@ -251,6 +252,57 @@ function Divider({ label }: { label: string }) {
   )
 }
 
+
+// ─── Recent News ─────────────────────────────────────────────────────────────
+function RecentNews({ playerName }: { playerName: string }) {
+  const [items, setItems] = useState<{ title: string; description: string; pubDate: string; link: string }[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    setLoading(true)
+    fetch(`/api/player-news?name=${encodeURIComponent(playerName)}`)
+      .then(r => r.json())
+      .then(data => { setItems(data.items ?? []); setLoading(false) })
+      .catch(() => setLoading(false))
+  }, [playerName])
+
+  if (loading) return (
+    <div style={{ padding: '8px 0', fontSize: 11, color: 'var(--text3)', textAlign: 'center' }}>
+      Loading news…
+    </div>
+  )
+
+  if (items.length === 0) return (
+    <div style={{ padding: '8px 0', fontSize: 11, color: 'var(--text3)', fontStyle: 'italic' }}>
+      No recent news found.
+    </div>
+  )
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      {items.map((item, i) => (
+        <div key={i} style={{ padding: '10px 12px', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 6, borderLeft: '3px solid var(--border2)' }}>
+          {item.title && (
+            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text)', marginBottom: 4, lineHeight: 1.4 }}>
+              {item.title}
+            </div>
+          )}
+          {item.description && (
+            <div style={{ fontSize: 11, color: 'var(--text2)', lineHeight: 1.55 }}>
+              {item.description.replace(/<[^>]+>/g, '').trim()}
+            </div>
+          )}
+          {item.pubDate && (
+            <div style={{ fontSize: 9, color: 'var(--text3)', marginTop: 5 }}>
+              {new Date(item.pubDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export default function PlayerCard({ player, managers, hometownMap, isDrafted, onNominate, onClose, adjustedPrices, tag, onCycleTag, note = '', onUpdateNote }: Props) {
   const isPit = isPitcher(player)
   const hometownMgrId = hometownMap[player.n]
@@ -386,6 +438,16 @@ export default function PlayerCard({ player, managers, hometownMap, isDrafted, o
             </div>
           )
         })()}
+
+        {/* ── RECENT NEWS ── */}
+        <div style={{ margin: '10px 20px 0', padding: '12px 14px', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+            <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+            <span style={{ fontSize: 9, color: 'var(--text3)', letterSpacing: '0.15em' }}>RECENT NEWS</span>
+            <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+          </div>
+          <RecentNews playerName={player.n} />
+        </div>
 
         {/* ── ZONE 2: blurb + projections | radar ── */}
         <div style={{ display: 'grid', gridTemplateColumns: hasRadar ? '1fr 1fr' : '1fr', alignItems: 'start', borderBottom: '1px solid var(--border)' }}>
