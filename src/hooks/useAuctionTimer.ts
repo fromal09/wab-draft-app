@@ -5,36 +5,10 @@ import { DEFAULT_TIMER_CONFIG } from '@/components/SettingsModal'
 import type { TimerConfig } from '@/components/SettingsModal'
 
 // ─── Speech ──────────────────────────────────────────────────────────────────
-let cachedVoice: SpeechSynthesisVoice | null = null
-
-function getVoice(): SpeechSynthesisVoice | null {
-  if (cachedVoice) return cachedVoice
-  const voices = window.speechSynthesis.getVoices()
-  cachedVoice = voices.find(v => v.name === 'Samantha') ??
-    voices.find(v => v.name === 'Victoria') ??
-    voices.find(v => v.name === 'Karen') ??
-    voices.find(v => v.name === 'Moira') ??
-    voices.find(v => v.name === 'Microsoft Zira Desktop') ??
-    voices.find(v => v.lang === 'en-US' && v.localService) ??
-    voices.find(v => v.lang.startsWith('en')) ?? null
-  return cachedVoice
-}
-
-// Pre-load voices as soon as they are available
-if (typeof window !== 'undefined' && window.speechSynthesis) {
-  window.speechSynthesis.onvoiceschanged = () => { cachedVoice = null; getVoice() }
-}
-
-function speak(text: string) {
-  if (typeof window === 'undefined' || !window.speechSynthesis) return
-  window.speechSynthesis.cancel()
-  const utt = new SpeechSynthesisUtterance(text)
-  utt.rate   = 0.78
-  utt.pitch  = 0.5
-  utt.volume = 1.0
-  const v = getVoice()
-  if (v) utt.voice = v
-  window.speechSynthesis.speak(utt)
+function playAudio(file: string) {
+  if (typeof window === 'undefined') return
+  const audio = new Audio(file)
+  audio.play().catch(() => {})
 }
 
 export function useAuctionTimer(config: TimerConfig = DEFAULT_TIMER_CONFIG) {
@@ -58,7 +32,7 @@ export function useAuctionTimer(config: TimerConfig = DEFAULT_TIMER_CONFIG) {
     setSecondsLeft(dur)
 
     if (p === 'going_once')  speak('Going once')
-    if (p === 'going_twice') speak('Going twice')
+    if (p === 'going_twice') playAudio('/audio/going-twice.mp3')
 
     let remaining = dur
     intervalRef.current = setInterval(() => {
@@ -71,7 +45,7 @@ export function useAuctionTimer(config: TimerConfig = DEFAULT_TIMER_CONFIG) {
         } else if (p === 'going_once') {
           runPhase('going_twice', configRef.current.going_twice)
         } else if (p === 'going_twice') {
-          speak('Sold!')
+          playAudio('/audio/sold.mp3')
           setPhase('sold')
         }
       }
