@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
                ?? block.match(/<guid[^>]*>([\s\S]*?)<\/guid>/)?.[1]?.trim()
                ?? ''
 
-      const title = stripTags(decodeHtml(rawTitle)).trim()
+      const title = stripTags(decodeHtml(rawTitle)).replace(/\s*-\s*[^-]{2,40}$/, '').trim()
       if (!title) continue
 
       const normTitle = title.toLowerCase().replace(/[^a-z0-9 ]/g, '').slice(0, 60)
@@ -47,6 +47,7 @@ export async function GET(req: NextRequest) {
       if (items.length >= 5) break
     }
 
+    items.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime())
     return NextResponse.json({ items })
   } catch {
     return NextResponse.json({ items: [] })
