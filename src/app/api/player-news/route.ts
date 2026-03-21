@@ -5,7 +5,7 @@ export async function GET(req: NextRequest) {
   if (!name) return NextResponse.json({ items: [] })
 
   try {
-    const query = encodeURIComponent(`${name} MLB baseball`)
+    const query = encodeURIComponent(`${name} site:nbcsports.com/fantasy/baseball`)
     const url = `https://news.google.com/rss/search?q=${query}&hl=en-US&gl=US&ceid=US:en`
 
     const res = await fetch(url, {
