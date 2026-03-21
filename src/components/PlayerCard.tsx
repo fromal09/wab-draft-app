@@ -275,7 +275,7 @@ function NewsItem({ item }: { item: { title: string; pubDate: string; source: st
   return (
     <div style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 6, overflow: 'hidden' }}>
       <div style={{ padding: '9px 12px' }}>
-        
+        <a
           href={item.link}
           target="_blank"
           rel="noopener noreferrer"
