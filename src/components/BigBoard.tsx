@@ -249,7 +249,7 @@ export default function BigBoard({ draftedIds, hometownMap, managers, onNominate
     {key:'pr',label:'$'},{key:'sc',label:'SCR'},{key:'ip',label:'IP'},
     {key:'w',label:'W'},{key:'l',label:'L'},{key:'sv',label:'SV'},{key:'hld',label:'HLD'},
     {key:'er',label:'ERA'},{key:'wh',label:'WHIP'},{key:'bb',label:'BB'},{key:'k',label:'K'},{key:'qa3',label:'QA3'},
-    {key:'age',label:'AGE'},{key:'pl_hld_rk'|'pl_sv_rk'|'pl_sp_rk',label:'PL HLD Rk'},
+    {key:'age',label:'AGE'},{key:'pl_hld_rk',label:'PL HLD Rk'},{key:'pl_sv_rk',label:'PL SV Rk'},{key:'pl_sp_rk',label:'PL SP Rk'},
   ]
   const prosSorts: {key: SortKey; label: string}[] = [
     {key:'prospect_rank',label:'RANK'},{key:'pr',label:'$'},{key:'sc',label:'SCR'},
