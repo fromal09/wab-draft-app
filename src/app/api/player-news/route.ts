@@ -4,19 +4,22 @@ export async function GET(req: NextRequest) {
   const name = req.nextUrl.searchParams.get('name')
   if (!name) return NextResponse.json({ items: [] })
 
-  const slug = name.trim().replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_.-]/g, '')
-
   try {
-    const res = await fetch(`https://www.fantasysp.com/rss/mlb/player!${slug}/`, {
+    const res = await fetch('https://www.rotowire.com/rss/news.php?sport=MLB', {
       headers: { 'User-Agent': 'Mozilla/5.0' },
       next: { revalidate: 300 },
     })
     if (!res.ok) return NextResponse.json({ items: [] })
     const xml = await res.text()
 
-    const items: { title: string; description: string; pubDate: string; link: string }[] = []
+    // Normalize name for matching — strip diacritics, lowercase
+    const norm = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+    const nameParts = norm(name).split(' ').filter(p => p.length > 2)
+
+    const items: { title: string; description: string; pubDate: string }[] = []
     const itemRe = /<item>([\s\S]*?)<\/item>/g
     let m: RegExpExecArray | null
+
     while ((m = itemRe.exec(xml)) !== null) {
       const block = m[1]
       const title       = block.match(/<title><!\[CDATA\[([\s\S]*?)\]\]><\/title>/)?.[1]
@@ -24,10 +27,14 @@ export async function GET(req: NextRequest) {
       const description = block.match(/<description><!\[CDATA\[([\s\S]*?)\]\]><\/description>/)?.[1]
                        ?? block.match(/<description>([\s\S]*?)<\/description>/)?.[1] ?? ''
       const pubDate     = block.match(/<pubDate>([\s\S]*?)<\/pubDate>/)?.[1] ?? ''
-      const link        = block.match(/<link>([\s\S]*?)<\/link>/)?.[1]
-                       ?? block.match(/<guid>([\s\S]*?)<\/guid>/)?.[1] ?? ''
-      if (title || description) items.push({ title, description, pubDate, link })
-      if (items.length >= 5) break
+
+      // Match if the title contains the player name (all significant parts)
+      const normTitle = norm(title)
+      const matches = nameParts.every(part => normTitle.includes(part))
+      if (matches && (title || description)) {
+        items.push({ title, description, pubDate })
+        if (items.length >= 5) break
+      }
     }
 
     return NextResponse.json({ items })
