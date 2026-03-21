@@ -121,7 +121,7 @@ function plRank(map: Record<string, number>, name: string): number | undefined {
 // ─── Injury Data ─────────────────────────────────────────────────────────────
 interface InjuryInfo { status: string; returnDate: string; comment: string }
 const INJURY_MAP: Record<string, InjuryInfo> = {
-  'Merrill Kelly':           { status: 'Out',      returnDate: 'Apr 7',  comment: 'Mar 19: Kelly (back) allowed two runs on five hits over 2.2 innings in Wednesday's spring start against the Cubs.' },
+  'Merrill Kelly':           { status: 'Out',      returnDate: 'Apr 7',  comment: "Mar 19: Kelly (back) allowed two runs on five hits over 2.2 innings in Wednesday's spring start against the Cubs." },
   'Corbin Burnes':           { status: 'IL',       returnDate: 'Jul 17', comment: 'Mar 17: Burnes (elbow) threw a bullpen session Monday.' },
   'Lourdes Gurriel Jr.':     { status: 'Out',      returnDate: 'Apr 17', comment: 'Mar 13: Gurriel (knee) could return to game action by mid-April.' },
   'Adrian Del Castillo':     { status: 'Out',      returnDate: 'Mar 26', comment: 'Mar 6: Del Castillo (calf) has begun hitting in cages and catching bullpen sessions.' },
