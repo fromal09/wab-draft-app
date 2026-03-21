@@ -104,6 +104,11 @@ export default function AuctionConsole({
     logging:     '✍ LOGGING',
   }
 
+  function restartBid() {
+    setLogging(false)
+    timer.resetBid()
+  }
+
   function openLogging() {
     timer.forceLogging()
     setLogging(true)
@@ -135,9 +140,14 @@ export default function AuctionConsole({
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement || e.target instanceof HTMLTextAreaElement) return
-      if (e.code === 'Space' && (timer.phase === 'bidding' || timer.phase === 'going_once' || timer.phase === 'going_twice' || timer.phase === 'sold')) {
-        e.preventDefault()
-        timer.resetBid()
+      if (e.code === 'Space') {
+        if (timer.phase === 'bidding' || timer.phase === 'going_once' || timer.phase === 'going_twice') {
+          e.preventDefault()
+          timer.resetBid()
+        } else if (timer.phase === 'sold' || logging) {
+          e.preventDefault()
+          restartBid()
+        }
       }
     }
     window.addEventListener('keydown', onKey)
@@ -278,7 +288,7 @@ export default function AuctionConsole({
             {phaseLabel[timer.phase]}
             {timer.phase === 'sold' && (
               <button
-                onClick={() => { timer.resetBid(); }}
+                onClick={restartBid}
                 style={{
                   marginLeft: 10, fontSize: 10, fontWeight: 700, padding: '3px 10px',
                   background: '#1e3a5f', border: '1px solid #3b82f6', borderRadius: 4,
@@ -507,6 +517,17 @@ export default function AuctionConsole({
             )}
 
             {/* Logging form */}
+            {(logging || timer.phase === 'sold') && timer.phase !== 'idle' && (
+              <div style={{ padding: '8px 16px 0' }}>
+                <button onClick={restartBid} style={{
+                  width: '100%', padding: '10px', background: '#1e3a5f',
+                  border: '1px solid #3b82f6', borderRadius: 7, color: '#93c5fd',
+                  fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit'
+                }}>
+                  ↺ Restart Bid (someone got a last-second bid in)
+                </button>
+              </div>
+            )}
             {logging && (
               <div style={{ background: 'var(--bg1)', border: '1px solid var(--gold)', borderRadius: 10, padding: 18 }}>
                 <div className="font-syne" style={{ fontSize: 15, fontWeight: 700, marginBottom: 14, color: 'var(--gold)' }}>
