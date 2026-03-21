@@ -178,7 +178,7 @@ const INJURY_MAP: Record<string, InjuryInfo> = {
   'Jose Berrios':            { status: 'Out',      returnDate: 'Apr 14', comment: "Mar 18: Berrios will have an in-person visit with a doctor to evaluate elbow inflammation." },
   'Shane Bieber':            { status: 'Out',      returnDate: 'Apr 30', comment: "Mar 13: Bieber (forearm) will continue throwing from flat ground and be reevaluated late next week." },
   'Bowden Francis':          { status: 'IL',       returnDate: 'TBD',    comment: "Feb 18: Francis undergoing UCL reconstruction surgery and will miss the 2026 season." },
-  'Anthony Santander':       { status: 'Out',      returnDate: 'Aug 1',  comment: "Feb 10: Santander"s left shoulder and back finally feel normal again.' },
+  'Anthony Santander':       { status: 'Out',      returnDate: 'Aug 1',  comment: `Feb 10: Santander's left shoulder and back finally feel normal again.` },
   'DJ Herz':                 { status: 'IL',       returnDate: 'Jul 1',  comment: "Mar 13: Herz (elbow) threw a bullpen session Friday." },
   'Trevor Williams':         { status: 'IL',       returnDate: 'Jun 1',  comment: "Mar 4: Williams (elbow) has resumed throwing progression, 25 tosses from 60 feet." },
   'J.P. Crawford':           { status: 'DTD',      returnDate: 'Mar 23', comment: "Mar 18: Crawford received a cortisone injection in his injured shoulder; Opening Day availability unclear." },
