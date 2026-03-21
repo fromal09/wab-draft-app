@@ -5,7 +5,7 @@ export async function GET(req: NextRequest) {
   if (!name) return NextResponse.json({ items: [] })
 
   try {
-    const query = encodeURIComponent(`${name} site:nbcsports.com/fantasy/baseball`)
+    const query = encodeURIComponent(`${name} (site:nbcsports.com/fantasy/baseball OR site:cbssports.com/fantasy/baseball)`)
     const url = `https://news.google.com/rss/search?q=${query}&hl=en-US&gl=US&ceid=US:en`
 
     const res = await fetch(url, {
@@ -44,11 +44,19 @@ export async function GET(req: NextRequest) {
       seenTitles.add(normTitle)
 
       items.push({ title, pubDate, source, link })
-      if (items.length >= 5) break
+      if (items.length >= 20) break
     }
 
-    items.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime())
-    return NextResponse.json({ items })
+    // Filter: all significant name parts must appear in headline (diacritic-aware, suffix-optional)
+    const normStr = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+    const baseName = name.replace(/\s+(jr\.?|sr\.?|ii|iii|iv|v)$/i, '').trim()
+    const nameParts = normStr(baseName).split(' ').filter(p => p.length > 1)
+    const filtered = items.filter(item => {
+      const nt = normStr(item.title)
+      return nameParts.every(p => nt.includes(p))
+    })
+    filtered.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime())
+    return NextResponse.json({ items: filtered.slice(0, 5) })
   } catch {
     return NextResponse.json({ items: [] })
   }
