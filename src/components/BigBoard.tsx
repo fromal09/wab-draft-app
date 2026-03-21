@@ -396,7 +396,7 @@ export default function BigBoard({ draftedIds, hometownMap, managers, onNominate
                       <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 3,
                         color: rank <= 25 ? '#4ade80' : rank <= 50 ? '#a3e635' : rank <= 75 ? '#e2e8f0' : '#fb923c',
                         background: 'var(--bg3)', border: '1px solid var(--border2)' }}>
-                        PL #{rank}
+                        PL HLD #{rank}
                       </span>
                     )
                   })()}

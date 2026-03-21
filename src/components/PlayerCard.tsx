@@ -6,6 +6,45 @@ import CategoryRadar from './CategoryRadar'
 import { HitterBars, PitcherBars } from './SavantBars'
 import RollingXwOBA from './RollingXwOBA'
 
+// ─── Pitcher List HLD Rankings ───────────────────────────────────────────────
+const PL_HLD_RANKS: Record<string, number> = {
+  'Jeremiah Estrada': 1, 'Garrett Whitlock': 2, 'Adrian Morejon': 3,
+  'Tanner Scott': 4, 'Robert Suarez': 5, 'Edwin Uceta': 6,
+  'Matt Brash': 7, 'Phil Maton': 8, 'Garrett Cleavinger': 9,
+  'Gabe Speier': 10, 'Dylan Lee': 11, 'Alex Vesia': 12,
+  'Luke Weaver': 13, 'Jason Adam': 14, 'Brad Keller': 15,
+  'Will Vest': 16, 'Kyle Finnegan': 17, 'Hunter Gaddis': 18,
+  'Tyler Rogers': 19, 'Grant Taylor': 20, 'Louis Varland': 21,
+  'Fernando Cruz': 22, 'Erik Sabrowski': 23, 'Mason Montgomery': 24,
+  'Aaron Ashby': 25, 'Matt Strahm': 26, 'Bryan Baker': 27,
+  'Jose A. Ferrer': 28, 'José Alvarado': 29, 'Andrew Nardi': 30,
+  'Camilo Doval': 31, 'Steven Okert': 32, 'Caleb Thielbar': 33,
+  'Brooks Raley': 34, 'Matt Svanson': 35, 'Andrew Kittredge': 36,
+  'Bryan King': 37, 'Drew Pomeranz': 38, 'Jordan Leasure': 39,
+  'Graham Ashcraft': 40, 'Justin Slaten': 41, 'Orion Kerkering': 42,
+  'Shawn Armstrong': 43, 'Tony Santillan': 44, 'Gregory Soto': 45,
+  'Anthony Bender': 46, 'Chris Martin': 47, 'Lucas Erceg': 48,
+  'Jared Koenig': 49, 'Connor Phillips': 50, 'Justin Sterner': 51,
+  'Brendon Little': 52, 'Braydon Fisher': 53, 'Eduard Bazardo': 54,
+  'Hunter Harvey': 55, 'Elvis Alvarado': 56, 'Mason Fluharty': 57,
+  'Rico Garcia': 58, 'Jonathan Bowlan': 59, 'Carmen Mlodzinski': 60,
+  'Hunter Bigge': 61, 'Dylan Dodd': 62, 'Ryan Zeferjahn': 63,
+  'Jack Dreyer': 64, 'Ryne Stanek': 65, 'Jonathan Loáisiga': 66,
+  'Edgardo Henriquez': 67, 'Hogan Harris': 68, 'Angel Zerpa': 69,
+  'Cole Sands': 70, 'Isaac Mattson': 71, 'Dietrich Enns': 72,
+  'Lake Bachar': 73, 'Matt Festa': 74, 'Tyler Holton': 75,
+  'Calvin Faucher': 76, 'JoJo Romero': 77, 'Nick Mears': 78,
+  'Grant Anderson': 79, 'Pierce Johnson': 80, 'Yennier Cano': 81,
+  'Tanner Banks': 82, 'Tyler Kinley': 83, 'Blake Treinen': 84,
+  'Kody Funderburk': 85, 'John Schreiber': 86, 'Scott Barlow': 87,
+  'Ryan Thompson': 88, 'José Buttó': 89, 'Jordan Romano': 90,
+  'Brock Burke': 91, 'David Morgan': 92, 'Keegan Akin': 93,
+  'Jacob Webb': 94, 'Aaron Bummer': 95, 'Juan Mejia': 96,
+  'Eric Orze': 97, 'Erik Miller': 98, 'Will Klein': 99, 'DL Hall': 100,
+}
+
+
+
 interface Props {
   player: Player
   managers: Manager[]
@@ -110,6 +149,17 @@ export default function PlayerCard({ player, managers, hometownMap, isDrafted, o
                       <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 4, color: '#e9d5ff', background: '#4c1d95', border: '1px solid #7c3aed' }}>🔮 Prospect #{rank}</span>
                       {eta && <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 4, color: '#c4b5fd', background: '#2e1065' }}>ETA {eta}</span>}
                     </>
+                  )
+                })()}
+                {(() => {
+                  const rank = PL_HLD_RANKS[player.n]
+                  if (!rank) return null
+                  return (
+                    <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 4,
+                      color: rank <= 25 ? '#4ade80' : rank <= 50 ? '#a3e635' : rank <= 75 ? '#e2e8f0' : '#fb923c',
+                      background: 'var(--bg3)', border: '1px solid var(--border2)' }}>
+                      PL HLD #{rank}
+                    </span>
                   )
                 })()}
                 {isDrafted && (
