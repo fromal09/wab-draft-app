@@ -487,7 +487,6 @@ export default function BigBoard({ draftedIds, hometownMap, managers, onNominate
                       </span>
                     )
                   })()}
-                  })()}
                   {(isSearching || isProsTab) && p.ps.split(',').map(pos => (
                     <span key={pos} style={{ fontSize: 9, color: POS_COLORS[pos.trim()] ?? 'var(--text3)', background: (POS_COLORS[pos.trim()] ?? '#666') + '18', padding: '1px 4px', borderRadius: 3 }}>{pos.trim()}</span>
                   ))}
